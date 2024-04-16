@@ -27,7 +27,7 @@ export class TcpHaServerStack extends cdk.Stack {
 
     listener.addTargets('ServerFleet', {
       port: 8080,
-      targets: [new InstanceTarget(instance1), new InstanceTarget(instance2)]
+      targets: [new InstanceTarget(instance1, 8080), new InstanceTarget(instance2, 8080)]
     })
 
   }
