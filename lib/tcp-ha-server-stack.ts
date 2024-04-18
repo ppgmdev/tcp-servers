@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -14,10 +15,17 @@ export class TcpHaServerStack extends cdk.Stack {
       vpc
     })
 
+    const ec2_userdata = ec2.UserData.forLinux()
+    ec2_userdata.addCommands(
+      'echo Hello World'
+    )
     const launchTemplate = new ec2.LaunchTemplate(this, 'POC-LaunchTemplate', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.latestAmazonLinux2()
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      securityGroup: ec2_securitygroup,
+      userData: ec2_userdata
     })
+
     const asg = new autoscaling.AutoScalingGroup(this, 'POC-AutoscalingGroup', {
       vpc,
       launchTemplate: launchTemplate,
