@@ -34,7 +34,7 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc, internetFacing: true });
 
-    network_loadbalancer.addSecurityGroup(ec2_securitygroup)
+    //add escape hatch for security group
 
     ec2_securitygroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'Allow traffic from port 8080')
 
