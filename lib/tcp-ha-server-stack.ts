@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -34,6 +33,8 @@ export class TcpHaServerStack extends cdk.Stack {
     })
 
     const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc, internetFacing: true });
+
+    network_loadbalancer.addSecurityGroup(ec2_securitygroup)
 
     ec2_securitygroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'Allow traffic from port 8080')
 
