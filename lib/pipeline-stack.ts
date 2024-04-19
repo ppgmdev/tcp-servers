@@ -16,7 +16,7 @@ export class PipelineStack extends cdk.Stack {
             pipelineName: 'POC-Pipeline',
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.codeCommit(repo, 'main'),
-                commands: ['npm ci','npm ci uninstall -g aws-cdk', 'npm ci install -g aws-cdk', 'npm run build', 'npx cdk synth']
+                commands: ['npm ci', 'npm run build', 'npx cdk synth']
             })
         })
 
