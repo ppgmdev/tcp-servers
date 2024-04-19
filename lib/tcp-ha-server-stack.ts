@@ -9,6 +9,10 @@ export class TcpHaServerStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'POC-Vpc')
+    
+    const nlb_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-NLB', {
+      vpc
+    })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
       vpc
@@ -34,9 +38,11 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc, internetFacing: true });
 
-    //add escape hatch for security group
+    network_loadbalancer.addSecurityGroup(ec2_securitygroup)
 
-    ec2_securitygroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(8080), 'Allow traffic from port 8080')
+    nlb_securitygroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow traffic from the internet')
+
+    ec2_securitygroup.addIngressRule(ec2.Peer.securityGroupId(nlb_securitygroup.securityGroupId), ec2.Port.tcp(8080), 'Allow traffic from port 8080')
 
     const listener = network_loadbalancer.addListener('listener', { port: 80 });
 
