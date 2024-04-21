@@ -4,6 +4,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam'
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -21,6 +22,11 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
       vpc
+    })
+
+    const role = new Role(this, 'POC-ec2-role',{
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      description: 'Role for ec2 poc'
     })
 
     const ec2_userdata = ec2.UserData.forLinux()
@@ -59,7 +65,7 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc, internetFacing: true });
 
-    network_loadbalancer.addSecurityGroup(ec2_securitygroup)
+    network_loadbalancer.addSecurityGroup(nlb_securitygroup)
 
     nlb_securitygroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow traffic from the internet')
 
