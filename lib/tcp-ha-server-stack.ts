@@ -79,5 +79,10 @@ export class TcpHaServerStack extends cdk.Stack {
       targets: [asg]
     })
 
+    new cdk.CfnOutput(this, 'Asset S3 Output', {
+     value: asset.s3ObjectKey,
+     description: 'Object key' 
+    })
+
   }
 }

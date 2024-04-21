@@ -22,5 +22,10 @@ export class PipelineStack extends cdk.Stack {
 
         const deploy = new TcpServiceStage(this, 'Deploy', {env:{region: "us-east-2", account: "151244847490"}})
         const deployStage = pipeline.addStage(deploy)
+
+        new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
+            value: repo.repositoryCloneUrlHttp,
+            description: 'Repository URL'
+        })
     }
 }
