@@ -3,15 +3,20 @@ import { Construct } from 'constructs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'POC-Vpc')
-    
+
     const nlb_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-NLB', {
       vpc
+    })
+
+    const asset = new Asset(this, 'Asset', {
+      path: './serverscripts/rustserver.sh'
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
@@ -26,8 +31,24 @@ export class TcpHaServerStack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
       machineImage: ec2.MachineImage.latestAmazonLinux2(),
       securityGroup: ec2_securitygroup,
-      userData: ec2_userdata
     })
+
+    const localPath = launchTemplate.userData?.addS3DownloadCommand({
+      bucket: asset.bucket,
+      bucketKey: asset.s3ObjectKey,
+    })
+
+    launchTemplate.userData?.addExecuteFileCommand({
+      filePath: String(localPath),
+    })
+
+    if (launchTemplate.role) {
+      asset.grantRead(launchTemplate.role);
+    } else {
+      // Handle the case where launchTemplate.role is undefined
+      // For example, you might want to create a new role and assign it to launchTemplate.role
+      // or handle the error in another appropriate way
+    }
 
     const asg = new autoscaling.AutoScalingGroup(this, 'POC-AutoscalingGroup', {
       vpc,
