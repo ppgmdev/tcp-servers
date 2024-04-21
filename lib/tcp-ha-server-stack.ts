@@ -37,6 +37,7 @@ export class TcpHaServerStack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
       machineImage: ec2.MachineImage.latestAmazonLinux2(),
       securityGroup: ec2_securitygroup,
+      role: role,
     })
 
     const localPath = launchTemplate.userData?.addS3DownloadCommand({
