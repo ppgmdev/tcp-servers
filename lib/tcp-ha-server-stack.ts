@@ -50,7 +50,9 @@ export class TcpHaServerStack extends cdk.Stack {
       filePath: String(localPath),
     })
     launchTemplate.userData?.addCommands(
-      `bash ${String(localPath)}`
+      `bash ${String(localPath)}`,
+      'touch test.txt',
+      'aws s3 cp test.txt s3://cdk-hnb659fds-assets-151244847490-us-east-2/test.txt'
     )
     if (launchTemplate.role) {
       asset.grantRead(launchTemplate.role);
