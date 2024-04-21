@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam'
+import { fileURLToPath } from 'url';
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -48,7 +49,9 @@ export class TcpHaServerStack extends cdk.Stack {
     launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(localPath),
     })
-
+    launchTemplate.userData?.addCommands(
+      `bash ${String(localPath)}`
+    )
     if (launchTemplate.role) {
       asset.grantRead(launchTemplate.role);
     } else {
