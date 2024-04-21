@@ -1,12 +1,15 @@
 #!/bin/bash
 
 # Update packages and install development tools
-sudo yum update -y
-sudo yum install gcc -y
+yum update -y
+yum install gcc -y
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-. $HOME/.cargo/env
+
+# Source the Rust environment variables
+# Since we cannot source .cargo/env directly in user data, we use the full path to the rustc binary
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Create a new Rust project
 cargo new hello_world_server
