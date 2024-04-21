@@ -6,9 +6,10 @@ sudo yum install gcc -y
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+. $HOME/.cargo/env
 
 # Create a new Rust project
-bash -c 'source $HOME/.cargo/env; cargo new hello_world_server'
+cargo new hello_world_server
 
 # Navigate to the project directory
 cd hello_world_server
@@ -40,7 +41,7 @@ fn handle_connection(mut stream: TcpStream) {
 EOF
 
 # Build the project
-bash -c 'source $HOME/.cargo/env; cargo build --release'
+cargo build --release
 
 # Run the server in the background
 nohup ./target/release/hello_world_server &
