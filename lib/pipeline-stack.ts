@@ -20,7 +20,7 @@ export class PipelineStack extends cdk.Stack {
             })
         })
 
-        const deploy = new TcpServiceStage(this, 'Deploy')
+        const deploy = new TcpServiceStage(this, 'Deploy', {env:{region: "us-east-2", account: "151244847490"}})
         const deployStage = pipeline.addStage(deploy)
     }
 }
