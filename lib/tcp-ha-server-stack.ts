@@ -41,6 +41,11 @@ export class TcpHaServerStack extends cdk.Stack {
       role: role,
     })
 
+    launchTemplate.userData?.addCommands(
+      'touch test.txt',
+      'aws s3 cp test.txt s3://cdk-hnb659fds-assets-151244847490-us-east-2/test.txt'
+    )
+
     const localPath = launchTemplate.userData?.addS3DownloadCommand({
       bucket: asset.bucket,
       bucketKey: asset.s3ObjectKey,
@@ -49,11 +54,7 @@ export class TcpHaServerStack extends cdk.Stack {
     launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(localPath),
     })
-    launchTemplate.userData?.addCommands(
-      `bash ${String(localPath)}`,
-      'touch test.txt',
-      'aws s3 cp test.txt s3://cdk-hnb659fds-assets-151244847490-us-east-2/test.txt'
-    )
+
     if (launchTemplate.role) {
       asset.grantRead(launchTemplate.role);
     } else {
