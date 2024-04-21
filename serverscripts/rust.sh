@@ -12,7 +12,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # Create a new Rust project
-cargo new hello_world_server
+$HOME/.cargo/bin/cargo new hello_world_server
 
 # Navigate to the project directory
 cd hello_world_server
@@ -44,7 +44,7 @@ fn handle_connection(mut stream: TcpStream) {
 EOF
 
 # Build the project
-cargo build --release
+$HOME/.cargo/bin/cargo build --release
 
 # Run the server in the background
 nohup ./target/release/hello_world_server &
