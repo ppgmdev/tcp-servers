@@ -17,7 +17,7 @@ export class TcpHaServerStack extends cdk.Stack {
     })
 
     const asset = new Asset(this, 'Asset', {
-      path: './serverscripts/rustserver.sh'
+      path: './serverscripts/rust.sh'
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
