@@ -41,9 +41,7 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'POC-LaunchTemplate', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.lookup({
-        name: 'rustserver'
-      }),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
       securityGroup: ec2_securitygroup,
       role: role,
     })
