@@ -21,7 +21,7 @@ export class TcpHaServerStack extends cdk.Stack {
       path: './serverscripts/rust.sh'
     })
     
-    const asset_executerust = new Asset(this, 'Asset', {
+    const asset_executerust = new Asset(this, 'Asset-ExecuteRust', {
       path: './serverscripts/installrust.sh'
     })
 
