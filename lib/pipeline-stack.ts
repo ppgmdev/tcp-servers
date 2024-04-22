@@ -39,7 +39,7 @@ export class PipelineStack extends cdk.Stack {
                 env: { region: "us-east-2", account: "151244847490" } 
             })
 
-        const deploy_2 = new TcpServiceStage(this, 'Deploy-T3-Micro-Rust',
+        const deploy_2 = new TcpServiceStage(this, 'Deploy-C5-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
