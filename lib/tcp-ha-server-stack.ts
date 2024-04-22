@@ -22,7 +22,7 @@ export class TcpHaServerStack extends cdk.Stack {
     })
     
     const asset_executerust = new Asset(this, 'Asset-ExecuteRust', {
-      path: './serverscripts/installrust.sh'
+      path: './serverscripts/executerust.sh'
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
