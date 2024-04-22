@@ -49,4 +49,4 @@ cargo build --release
 sleep 2
 
 # Run the server in the background
-nohup /root/hello_world_server/target/release/hello_world_server &
+nohup /hello_world_server/target/release/hello_world_server &
