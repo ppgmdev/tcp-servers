@@ -20,6 +20,10 @@ export class TcpHaServerStack extends cdk.Stack {
     const asset = new Asset(this, 'Asset', {
       path: './serverscripts/rust.sh'
     })
+    
+    const asset_executerust = new Asset(this, 'Asset', {
+      path: './serverscripts/installrust.sh'
+    })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
       vpc
@@ -41,18 +45,22 @@ export class TcpHaServerStack extends cdk.Stack {
       role: role,
     })
 
-    launchTemplate.userData?.addCommands(
-      'touch test.txt',
-      'aws s3 cp test.txt s3://cdk-hnb659fds-assets-151244847490-us-east-2/test.txt'
-    )
-
     const localPath = launchTemplate.userData?.addS3DownloadCommand({
       bucket: asset.bucket,
       bucketKey: asset.s3ObjectKey,
     })
 
+    const local_path_executerust = launchTemplate.userData?.addS3DownloadCommand({
+      bucket: asset_executerust.bucket,
+      bucketKey: asset_executerust.s3ObjectKey,
+    })
+
     launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(localPath),
+    })
+
+    launchTemplate.userData?.addExecuteFileCommand({
+      filePath: String(local_path_executerust),
     })
 
     if (launchTemplate.role) {
