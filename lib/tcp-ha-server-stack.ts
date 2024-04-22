@@ -5,11 +5,15 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
-import { fileURLToPath } from 'url';
+
+interface tcpHAprops {
+  machineImage: ec2.IMachineImage,
+  instanceType: ec2.InstanceType
+}
 
 export class TcpHaServerStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+  constructor(scope: Construct, id: string, props: tcpHAprops) {
+    super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'POC-Vpc')
 
@@ -19,10 +23,6 @@ export class TcpHaServerStack extends cdk.Stack {
 
     const asset = new Asset(this, 'Asset', {
       path: './serverscripts/rust.sh'
-    })
-
-    const asset_executerust = new Asset(this, 'Asset-ExecuteRust', {
-      path: './serverscripts/executerust.sh'
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
@@ -40,8 +40,8 @@ export class TcpHaServerStack extends cdk.Stack {
     )
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'POC-LaunchTemplate', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceType: props.instanceType,
+      machineImage: props.machineImage,
       securityGroup: ec2_securitygroup,
       role: role,
     })
@@ -51,26 +51,13 @@ export class TcpHaServerStack extends cdk.Stack {
       bucketKey: asset.s3ObjectKey,
     })
 
-    /*     const local_path_executerust = launchTemplate.userData?.addS3DownloadCommand({
-          bucket: asset_executerust.bucket,
-          bucketKey: asset_executerust.s3ObjectKey,
-        })
-    
-     */
     launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(localPath),
     })
 
-   /*  launchTemplate.userData?.addExecuteFileCommand({
-      filePath: String(local_path_executerust),
-    }) */
 
     if (launchTemplate.role) {
       asset.grantRead(launchTemplate.role);
-    } else {
-      // Handle the case where launchTemplate.role is undefined
-      // For example, you might want to create a new role and assign it to launchTemplate.role
-      // or handle the error in another appropriate way
     }
 
     const asg = new autoscaling.AutoScalingGroup(this, 'POC-AutoscalingGroup', {

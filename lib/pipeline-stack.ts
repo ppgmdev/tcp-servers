@@ -3,6 +3,7 @@ import { Construct } from 'constructs'
 import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines'
 import { Repository } from 'aws-cdk-lib/aws-codecommit';
 import { TcpServiceStage } from './tcpservice-pipeline-stage';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -20,8 +21,35 @@ export class PipelineStack extends cdk.Stack {
             })
         })
 
-        const deploy = new TcpServiceStage(this, 'Deploy', {env:{region: "us-east-2", account: "151244847490"}})
-        const deployStage = pipeline.addStage(deploy)
+        const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2(),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE)
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            })
+
+        const deploy_1 = new TcpServiceStage(this, 'Deploy-T3-Micro-Rust',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2(),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO)
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            })
+
+        const deploy_2 = new TcpServiceStage(this, 'Deploy-T3-Micro-Rust',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2(),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            })
+        pipeline.addStage(deploy_0);
+        pipeline.addStage(deploy_1);
+        pipeline.addStage(deploy_2);
 
         new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
             value: repo.repositoryCloneUrlHttp,
