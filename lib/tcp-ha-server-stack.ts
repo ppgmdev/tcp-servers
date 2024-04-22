@@ -4,7 +4,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam'
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { fileURLToPath } from 'url';
 
 export class TcpHaServerStack extends cdk.Stack {
@@ -20,7 +20,7 @@ export class TcpHaServerStack extends cdk.Stack {
     const asset = new Asset(this, 'Asset', {
       path: './serverscripts/rust.sh'
     })
-    
+
     const asset_executerust = new Asset(this, 'Asset-ExecuteRust', {
       path: './serverscripts/executerust.sh'
     })
@@ -29,7 +29,7 @@ export class TcpHaServerStack extends cdk.Stack {
       vpc
     })
 
-    const role = new Role(this, 'POC-ec2-role',{
+    const role = new Role(this, 'POC-ec2-role', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       description: 'Role for ec2 poc'
     })
@@ -38,9 +38,12 @@ export class TcpHaServerStack extends cdk.Stack {
     ec2_userdata.addCommands(
       'echo Hello World'
     )
+
     const launchTemplate = new ec2.LaunchTemplate(this, 'POC-LaunchTemplate', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      machineImage: ec2.MachineImage.lookup({
+        name: 'rustserver'
+      }),
       securityGroup: ec2_securitygroup,
       role: role,
     })
@@ -50,18 +53,19 @@ export class TcpHaServerStack extends cdk.Stack {
       bucketKey: asset.s3ObjectKey,
     })
 
-    const local_path_executerust = launchTemplate.userData?.addS3DownloadCommand({
-      bucket: asset_executerust.bucket,
-      bucketKey: asset_executerust.s3ObjectKey,
-    })
-
+    /*     const local_path_executerust = launchTemplate.userData?.addS3DownloadCommand({
+          bucket: asset_executerust.bucket,
+          bucketKey: asset_executerust.s3ObjectKey,
+        })
+    
+     */
     launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(localPath),
     })
 
-    launchTemplate.userData?.addExecuteFileCommand({
+   /*  launchTemplate.userData?.addExecuteFileCommand({
       filePath: String(local_path_executerust),
-    })
+    }) */
 
     if (launchTemplate.role) {
       asset.grantRead(launchTemplate.role);
@@ -94,8 +98,8 @@ export class TcpHaServerStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'Asset S3 Output', {
-     value: asset.s3ObjectKey,
-     description: 'Object key' 
+      value: asset.s3ObjectKey,
+      description: 'Object key'
     })
 
   }
