@@ -1,18 +1,16 @@
 #!/bin/bash
 
 # Update packages and install development tools
-yum update -y
-yum install gcc -y
+sudo yum update -y
+sudo yum groupinstall "Development Tools" -y
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Source the Rust environment variables
-# Since we cannot source .cargo/env directly in user data, we use the full path to the rustc binary
-export PATH="$HOME/.cargo/bin:$PATH"
+exec $SHELL
+source $HOME/.cargo/env
 
 # Create a new Rust project
-$HOME/.cargo/bin/cargo new hello_world_server
+cargo new hello_world_server
 
 # Navigate to the project directory
 cd hello_world_server
@@ -44,7 +42,7 @@ fn handle_connection(mut stream: TcpStream) {
 EOF
 
 # Build the project
-$HOME/.cargo/bin/cargo build --release
+cargo build --release
 
 # Run the server in the background
 nohup ./target/release/hello_world_server &
