@@ -11,6 +11,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc
 source /root/.bashrc
 
+sleep 2
 # Create a new Rust project
 cargo new hello_world_server
 
@@ -45,6 +46,7 @@ EOF
 
 # Build the project
 cargo build --release
+sleep 2
 
 # Run the server in the background
 nohup /root/hello_world_server/target/release/hello_world_server &
