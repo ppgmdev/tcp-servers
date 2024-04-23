@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 interface tcpHAprops {
   machineImage: ec2.IMachineImage,
@@ -16,8 +17,10 @@ export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: tcpHAprops) {
     super(scope, id);
 
+    const vpcId = StringParameter.valueFromLookup(this, '/VpcProvider/VPCID')
+
     const vpc = ec2.Vpc.fromLookup(this, 'VPC-POC',{
-      vpcId: cdk.Fn.importValue('vpcid'),
+      vpcId: vpcId
     })
     const nlb_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-NLB', {
       vpc: props.vpc,
