@@ -4,7 +4,6 @@ import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelin
 import { Repository } from 'aws-cdk-lib/aws-codecommit';
 import { TcpServiceStage } from './tcpservice-pipeline-stage';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { NetworkStackStage } from './network-pipeline-stage';
 
 interface vpc {
     vpcId: string,
@@ -30,6 +29,7 @@ export class PipelineStack extends cdk.Stack {
                 machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
+                serverFileName: 'rust.sh',
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -40,6 +40,7 @@ export class PipelineStack extends cdk.Stack {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
+                serverFileName: 'rust.sh',
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -50,6 +51,7 @@ export class PipelineStack extends cdk.Stack {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
+                serverFileName: 'rust.sh',
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -60,17 +62,29 @@ export class PipelineStack extends cdk.Stack {
                 machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
+                serverFileName: 'rust.sh',
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             });
 
+        const deploy_4 = new TcpServiceStage(this, 'Deploy-M7G-Graviton-Large-GO',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
+                serverFileName: 'go.sh',
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            });
         const tcp_service_wave = pipeline.addWave('TCPServices');
 
         tcp_service_wave.addStage(deploy_0);
         tcp_service_wave.addStage(deploy_1);
         tcp_service_wave.addStage(deploy_2);
         tcp_service_wave.addStage(deploy_3);
+        tcp_service_wave.addStage(deploy_4);
 
         new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
             value: repo.repositoryCloneUrlHttp,

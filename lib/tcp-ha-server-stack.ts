@@ -11,6 +11,7 @@ interface tcpHAprops {
   machineImage: ec2.IMachineImage,
   instanceType: ec2.InstanceType,
   vpcId: string,
+  serverFileName: string,
 }
 
 export class TcpHaServerStack extends cdk.Stack {
@@ -29,7 +30,7 @@ export class TcpHaServerStack extends cdk.Stack {
     })
 
     const asset = new Asset(this, 'Asset', {
-      path: './serverscripts/rust.sh'
+      path: `./serverscripts/${props.serverFileName}`
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {

@@ -7,6 +7,7 @@ interface propsTCPservice{
     machineImage: ec2.IMachineImage,
     instanceType: ec2.InstanceType,
     vpcId: string,
+    serverFileName: string,
 }
 
 export class TcpServiceStage extends Stage {
