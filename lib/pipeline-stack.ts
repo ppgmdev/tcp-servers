@@ -7,10 +7,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { NetworkStackStage } from './network-pipeline-stage';
 
 interface vpc {
-    vpc: ec2.IVpc,
+    vpcId: string,
 }
 export class PipelineStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, vpcProps: vpc, props?: cdk.StackProps) {
         super(scope, id, props);
 
         const repo = new Repository(this, 'POC-repo', {
@@ -29,6 +29,7 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -38,6 +39,7 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+                vpcId: vpcProps.vpcId,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -47,6 +49,7 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 

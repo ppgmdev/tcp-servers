@@ -5,7 +5,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface propsTCPservice{
     machineImage: ec2.IMachineImage,
-    instanceType: ec2.InstanceType
+    instanceType: ec2.InstanceType,
+    vpcId: string,
 }
 
 export class TcpServiceStage extends Stage {

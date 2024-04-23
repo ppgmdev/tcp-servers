@@ -10,6 +10,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 interface tcpHAprops {
   machineImage: ec2.IMachineImage,
   instanceType: ec2.InstanceType,
+  vpcId: string,
 }
 
 export class TcpHaServerStack extends cdk.Stack {
