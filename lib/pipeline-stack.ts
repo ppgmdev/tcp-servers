@@ -13,6 +13,10 @@ export class PipelineStack extends cdk.Stack {
             repositoryName: 'POC-repo'
         })
 
+        const vpc = new ec2.Vpc(this, 'POC-VPC', {
+
+        })
+
         const pipeline = new CodePipeline(this, 'Pipeline', {
             pipelineName: 'POC-Pipeline',
             synth: new ShellStep('Synth', {
@@ -24,7 +28,8 @@ export class PipelineStack extends cdk.Stack {
         const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
-                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE)
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE),
+                vpc: vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -33,7 +38,8 @@ export class PipelineStack extends cdk.Stack {
         const deploy_1 = new TcpServiceStage(this, 'Deploy-T3-Micro-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
-                instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO)
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+                vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -42,7 +48,8 @@ export class PipelineStack extends cdk.Stack {
         const deploy_2 = new TcpServiceStage(this, 'Deploy-C5-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
-                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+                vpc: vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
