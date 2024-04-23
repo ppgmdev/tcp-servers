@@ -16,6 +16,9 @@ export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: tcpHAprops) {
     super(scope, id);
 
+    const vpc = ec2.Vpc.fromLookup(this, 'VPC-POC',{
+      vpcId: cdk.Fn.importValue('vpcname'),
+    })
     const nlb_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-NLB', {
       vpc: props.vpc,
     })

@@ -4,6 +4,7 @@ import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelin
 import { Repository } from 'aws-cdk-lib/aws-codecommit';
 import { TcpServiceStage } from './tcpservice-pipeline-stage';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { NetworkStackStage } from './network-pipeline-stage';
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -24,6 +25,8 @@ export class PipelineStack extends cdk.Stack {
                 commands: ['npm ci', 'npm run build', 'npx cdk synth']
             })
         })
+
+        const deploy_network = new NetworkStackStage(this, 'NetworkStack')
 
         const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
             {
@@ -49,11 +52,12 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-                vpc: vpc,
+                vpc: vpc
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             })
+        pipeline.addStage(deploy_network);
         pipeline.addStage(deploy_0);
         pipeline.addStage(deploy_1);
         pipeline.addStage(deploy_2);
