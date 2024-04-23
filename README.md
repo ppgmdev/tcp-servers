@@ -1,14 +1,27 @@
-# Welcome to your CDK TypeScript project
+# TCP Service with AWS CDK
 
-This is a blank project for CDK development with TypeScript.
+## Get Started
+This project creates a network stack to deploy resources inside a VPC with public and private subnets, natgateways, internet gateways.
+It also deploys a CI/CD pipeline (CDK Pipeline) in AWS CodePipeline to deploy different TCP Services for Rust and GO servers.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+To get started do:
 
-## Useful commands
+```
+git clone xxxx
+cdk bootstrap
+cdk deploy --all
+```
+This will deploy the POC-Network Stack and the PipelineStack in your account.
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+The PipelineStack deploys a repository in AWS CodeCommit. This repository triggers the pipeline.
+
+Add your code to the pipeline:
+```
+git remote add codecommit <https endpoint, you can find it in the AWS Console>
+git add .
+git commit -m'First commit'
+git push codecommit main
+```
+
+This will trigger the pipeline and deploy the TCP Services
+
