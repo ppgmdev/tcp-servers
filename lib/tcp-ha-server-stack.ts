@@ -93,6 +93,10 @@ export class TcpHaServerStack extends cdk.Stack {
       value: asset.s3ObjectKey,
       description: 'Object key'
     })
-
+    
+    new cdk.CfnOutput(this, 'NLB-DNS', {
+      value: network_loadbalancer.loadBalancerDnsName,
+      description: 'NLB DNS name'
+    });
   }
 }

@@ -53,11 +53,24 @@ export class PipelineStack extends cdk.Stack {
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
-            })
+            });
+
+        const deploy_3 = new TcpServiceStage(this, 'Deploy-M7G-Graviton-Large-Rust',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            });
+
         const tcp_service_wave = pipeline.addWave('TCPServices');
+
         tcp_service_wave.addStage(deploy_0);
         tcp_service_wave.addStage(deploy_1);
         tcp_service_wave.addStage(deploy_2);
+        tcp_service_wave.addStage(deploy_3);
 
         new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
             value: repo.repositoryCloneUrlHttp,
