@@ -25,27 +25,27 @@ export class PipelineStack extends cdk.Stack {
             })
         })
 
-        const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
+        const deploy_0 = new TcpServiceStage(this, 'Deploy-R7G-Graviton-Large-Rust',
             {
-                machineImage: ec2.MachineImage.latestAmazonLinux2(),
-                instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE),
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             })
 
-        const deploy_1 = new TcpServiceStage(this, 'Deploy-T3-Micro-Rust',
+        const deploy_1 = new TcpServiceStage(this, 'Deploy-T3-X86-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
-                instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             })
 
-        const deploy_2 = new TcpServiceStage(this, 'Deploy-C5-Large-Rust',
+        const deploy_2 = new TcpServiceStage(this, 'Deploy-C5-X86-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
