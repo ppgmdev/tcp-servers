@@ -25,13 +25,10 @@ export class PipelineStack extends cdk.Stack {
             })
         })
 
-        const deploy_network = new NetworkStackStage(this, 'NetworkStack', {env:{region:'us-east-2', account: '151244847490'}})
-
         const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE),
-                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -41,7 +38,6 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -51,15 +47,14 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             })
-        pipeline.addStage(deploy_network);
-        pipeline.addStage(deploy_0);
-        pipeline.addStage(deploy_1);
-        pipeline.addStage(deploy_2);
+        const tcp_service_wave = pipeline.addWave('TCPServices');
+        tcp_service_wave.addStage(deploy_0);
+        tcp_service_wave.addStage(deploy_1);
+        tcp_service_wave.addStage(deploy_2);
 
         new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
             value: repo.repositoryCloneUrlHttp,

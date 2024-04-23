@@ -10,15 +10,21 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 interface tcpHAprops {
   machineImage: ec2.IMachineImage,
   instanceType: ec2.InstanceType,
-  vpc: ec2.IVpc,
 }
 
 export class TcpHaServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: tcpHAprops) {
     super(scope, id);
 
+    const vpcId = StringParameter.valueFromLookup(this, '/VpcProvider/VPCID'); 
+    const vpc = ec2.Vpc.fromLookup(this, "VPC",
+      {
+        vpcId: vpcId
+      }
+    );
+
     const nlb_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-NLB', {
-      vpc: props.vpc,
+      vpc
     })
 
     const asset = new Asset(this, 'Asset', {
@@ -26,7 +32,7 @@ export class TcpHaServerStack extends cdk.Stack {
     })
 
     const ec2_securitygroup = new ec2.SecurityGroup(this, 'POC-SecurityGroup-EC2', {
-      vpc: props.vpc,
+      vpc
     })
 
     const role = new Role(this, 'POC-ec2-role', {
@@ -61,13 +67,13 @@ export class TcpHaServerStack extends cdk.Stack {
     }
 
     const asg = new autoscaling.AutoScalingGroup(this, 'POC-AutoscalingGroup', {
-      vpc: props.vpc,
+      vpc,
       launchTemplate: launchTemplate,
       minCapacity: 2,
       maxCapacity: 4
     })
 
-    const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc: props.vpc, internetFacing: true });
+    const network_loadbalancer = new elbv2.NetworkLoadBalancer(this, 'POC-NetworkLoadBalancer', { vpc, internetFacing: true });
 
     network_loadbalancer.addSecurityGroup(nlb_securitygroup)
 

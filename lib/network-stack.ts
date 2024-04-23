@@ -9,6 +9,10 @@ export class NetworkStack extends cdk.Stack {
         super(scope, id, props);
         const vpc = new Vpc(this, 'POC-VPC');
 
+        new StringParameter(this, 'VPCID', {
+            parameterName: `/VpcProvider/VPCID`,
+            stringValue: vpc.vpcId
+        })
         new cdk.CfnOutput(this, 'VPC-Output', {
             value: vpc.vpcId,
             exportName: 'vpcid',
