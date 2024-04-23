@@ -9,6 +9,7 @@ export class NetworkStack extends cdk.Stack {
 
         new cdk.CfnOutput(this, 'VPC-Output', {
             value: vpc.vpcId,
+            exportName: 'vpcid',
             description: 'VPC ID'
         })
     }
