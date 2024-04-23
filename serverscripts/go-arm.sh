@@ -1,36 +1,29 @@
 #!/bin/bash
-# Update package lists
 
-sudo yum update -y
+# Update the package lists for upgrades and new package installations
+yum update -y
 
+# Install wget to download Go
+yum install -y wget
 
-# Install required dependencies
-sudo yum install -y gcc tar gzip
+# Download Go for ARM64
+wget https://golang.org/dl/go1.17.linux-arm64.tar.gz
 
+# Extract the downloaded archive
+tar -C /usr/local -xzf go1.17.linux-arm64.tar.gz
 
-# Download Go binary
-GO_VERSION="1.20.2"
-GO_ARCH="arm64"
-GO_ARCHIVE="go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
-GO_URL="https://golang.org/dl/${GO_ARCHIVE}"
+# Set Go environment variables
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+echo 'export GOPATH=$HOME/go' >> /etc/profile
+echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
 
+# Apply the changes
+source /etc/profile
 
-wget "${GO_URL}"
-
-# Extract Go binary
-sudo tar -C /usr/local -xzf "${GO_ARCHIVE}"
-
-
-# Add Go bin directory to PATH
-echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile.d/go.sh
-source /etc/profile.d/go.sh
-
-
-# Verify installation
+# Verify the installation
 go version
 
-# Cleanup
-rm "${GO_ARCHIVE}"
+export GOCACHE=/root/go/cache
 
 # Create a directory for the Go server
 mkdir -p go-server/

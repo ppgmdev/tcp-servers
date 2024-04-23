@@ -68,16 +68,50 @@ export class PipelineStack extends cdk.Stack {
                 env: { region: "us-east-2", account: "151244847490" } 
             });
 
-        const deploy_4 = new TcpServiceStage(this, 'Deploy-M7G-Graviton-Large-GO',
+        const deploy_4 = new TcpServiceStage(this, 'Deploy-R7G-Graviton-Large-GO',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
                 vpcId: vpcProps.vpcId,
-                serverFileName: 'go.sh',
+                serverFileName: 'go-arm.sh',
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
             });
+
+        const deploy_5 = new TcpServiceStage(this, 'Deploy-T3-X86-Large-GO',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
+                serverFileName: 'go-amd.sh',
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            });
+
+        const deploy_6 = new TcpServiceStage(this, 'Deploy-C5-X86-Large-GO',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
+                serverFileName: 'go-amd.sh',
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            });
+
+        const deploy_7 = new TcpServiceStage(this, 'Deploy-M7G-Graviton-Large-GO',
+            {
+                machineImage: ec2.MachineImage.latestAmazonLinux2023({cpuType: ec2.AmazonLinuxCpuType.ARM_64}),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.M7G, ec2.InstanceSize.LARGE),
+                vpcId: vpcProps.vpcId,
+                serverFileName: 'go-arm.sh',
+            },
+            {
+                env: { region: "us-east-2", account: "151244847490" } 
+            });
+
         const tcp_service_wave = pipeline.addWave('TCPServices');
 
         tcp_service_wave.addStage(deploy_0);
@@ -85,6 +119,9 @@ export class PipelineStack extends cdk.Stack {
         tcp_service_wave.addStage(deploy_2);
         tcp_service_wave.addStage(deploy_3);
         tcp_service_wave.addStage(deploy_4);
+        tcp_service_wave.addStage(deploy_5);
+        tcp_service_wave.addStage(deploy_6);
+        tcp_service_wave.addStage(deploy_7);
 
         new cdk.CfnOutput(this, 'CodeCommitRepo-URL', {
             value: repo.repositoryCloneUrlHttp,
