@@ -10,7 +10,7 @@ interface vpc {
     vpc: ec2.IVpc,
 }
 export class PipelineStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, vpcprops: vpc, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
         const repo = new Repository(this, 'POC-repo', {
@@ -25,13 +25,13 @@ export class PipelineStack extends cdk.Stack {
             })
         })
 
-        const deploy_network = new NetworkStackStage(this, 'NetworkStack')
+        const deploy_network = new NetworkStackStage(this, 'NetworkStack', {env:{region:'us-east-2', account: '151244847490'}})
 
         const deploy_0 = new TcpServiceStage(this, 'Deploy-C6G-Large-Rust',
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE),
-                vpc: vpcprops.vpc
+                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -41,7 +41,7 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-                vpc: vpcprops.vpc
+                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
@@ -51,7 +51,7 @@ export class PipelineStack extends cdk.Stack {
             {
                 machineImage: ec2.MachineImage.latestAmazonLinux2(),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-                vpc: vpcprops.vpc
+                vpc: deploy_network.vpc,
             },
             {
                 env: { region: "us-east-2", account: "151244847490" } 
