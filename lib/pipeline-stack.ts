@@ -32,7 +32,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'rust.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             })
 
         const deploy_1 = new TcpServiceStage(this, 'Deploy-T3-X86-Large-Rust',
@@ -43,7 +43,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'rust.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             })
 
         const deploy_2 = new TcpServiceStage(this, 'Deploy-C5-X86-Large-Rust',
@@ -54,7 +54,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'rust.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             });
 
         const deploy_3 = new TcpServiceStage(this, 'Deploy-M7G-Graviton-Large-Rust',
@@ -65,7 +65,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'rust.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             });
 
         const deploy_4 = new TcpServiceStage(this, 'Deploy-R7G-Graviton-Large-GO',
@@ -76,7 +76,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'go-arm.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             });
 
         const deploy_5 = new TcpServiceStage(this, 'Deploy-T3-X86-Large-GO',
@@ -87,7 +87,7 @@ export class PipelineStack extends cdk.Stack {
                 serverFileName: 'go-amd.sh',
             },
             {
-                env: { region: "us-east-2", account: "151244847490" } 
+                env: { region: "us-east-2", account: process.env.CDK_DEFAULT_ACCOUNT} 
             });
 
         const deploy_6 = new TcpServiceStage(this, 'Deploy-C5-X86-Large-GO',
