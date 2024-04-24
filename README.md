@@ -7,7 +7,7 @@ It also deploys a CI/CD pipeline (CDK Pipeline) in AWS CodePipeline to deploy di
 To get started do:
 
 ```
-git clone xxxx
+git clone https://github.com/ppgmdev/tcp-servers.git
 cdk bootstrap
 cdk deploy --all
 ```
@@ -30,7 +30,7 @@ After deployment you can go to CloudFormation and see the resources. You can als
 ## Modifying resources (Instance types, Architecturem, Server Logic)
 You can add more or less TCP services in the lib/pipeline-stack.ts 
 
-You have to instanciate a new TcpServiceStage as the example below. There you can modify the machineImage, instanceType, vpcId (vpc where the resources are deployed), serverFileName.
+You have to instantiate a new TcpServiceStage as the example below. There you can modify the machineImage, instanceType, vpcId (vpc where the resources are deployed), serverFileName.
 
 ```
 const deploy_6 = new TcpServiceStage(this, 'Deploy-C5-X86-Large-GO',
