@@ -33,75 +33,72 @@ cat << 'EOF' > go-server/server.go
 package main
 
 import (
-        "fmt"
-        "net"
-        "runtime"
-        "sync"
-        "sync/atomic"
+    "fmt"
+    "net/http"
 )
 
 func main() {
-        // Set the number of logical CPUs to use
-        numCPUs := runtime.NumCPU()
-        runtime.GOMAXPROCS(numCPUs)
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, "Hello, World!")
+    })
 
-        // Start the server
-        addr := ":8080"
-        listener, err := net.Listen("tcp", addr)
-        if err != nil {
-                fmt.Printf("Failed to listen on %s: %v\n", addr, err)
-                return
-        }
-        fmt.Printf("Server listening on %s\n", addr)
-
-        // Use a WaitGroup to wait for all goroutines to finish
-        var wg sync.WaitGroup
-
-        // Use an atomic counter to keep track of the number of requests
-        var requestCount int64
-
-        // Accept incoming connections concurrently
-        for i := 0; i < numCPUs; i++ {
-                wg.Add(1)
-                go func() {
-                        defer wg.Done()
-                        for {
-                                conn, err := listener.Accept()
-                                if err != nil {
-                                        fmt.Printf("Failed to accept connection: %v\n", err)
-                                        continue
-                                }
-
-                                // Increment the request counter
-                                atomic.AddInt64(&requestCount, 1)
-
-                                // Handle the request concurrently
-                                go handleRequest(conn)
-                        }
-                }()
-        }
-
-        // Wait for all goroutines to finish
-        wg.Wait()
+    fmt.Println("Server listening on :8080")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        fmt.Printf("Failed to start server: %v\n", err)
+    }
 }
+EOF
 
-func handleRequest(conn net.Conn) {
-        defer conn.Close()
+# Build the Go server
+go run go-server/server.go &
+#!/bin/bash
 
-        // Read and discard the request data
-        buf := make([]byte, 1024)
-        _, err := conn.Read(buf)
-        if err != nil {
-                fmt.Printf("Failed to read request: %v\n", err)
-                return
-        }
+# Update the package lists for upgrades and new package installations
+yum update -y
 
-        // Write a simple response
-        _, err = conn.Write([]byte("OK\n"))
-        if err != nil {
-                fmt.Printf("Failed to write response: %v\n", err)
-                return
-        }
+# Install wget to download Go
+yum install -y wget
+
+# Download Go
+wget https://golang.org/dl/go1.17.linux-amd64.tar.gz
+
+# Extract the downloaded archive
+tar -C /usr/local -xzf go1.17.linux-amd64.tar.gz
+
+# Set Go environment variables
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+echo 'export GOPATH=$HOME/go' >> /etc/profile
+echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
+
+# Apply the changes
+source /etc/profile
+
+# Verify the installation
+go version
+
+export GOCACHE=/root/go/cache
+
+# Create a directory for the Go server
+mkdir -p go-server/
+
+# Write the Go server code
+cat << 'EOF' > go-server/server.go
+package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, "Hello, World!")
+    })
+
+    fmt.Println("Server listening on :8080")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        fmt.Printf("Failed to start server: %v\n", err)
+    }
 }
 EOF
 
