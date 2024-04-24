@@ -33,75 +33,19 @@ cat << 'EOF' > go-server/server.go
 package main
 
 import (
-        "fmt"
-        "net"
-        "runtime"
-        "sync"
-        "sync/atomic"
+    "fmt"
+    "net/http"
 )
 
 func main() {
-        // Set the number of logical CPUs to use
-        numCPUs := runtime.NumCPU()
-        runtime.GOMAXPROCS(numCPUs)
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, "GO Server, ARM")
+    })
 
-        // Start the server
-        addr := ":8080"
-        listener, err := net.Listen("tcp", addr)
-        if err != nil {
-                fmt.Printf("Failed to listen on %s: %v\n", addr, err)
-                return
-        }
-        fmt.Printf("Server listening on %s\n", addr)
-
-        // Use a WaitGroup to wait for all goroutines to finish
-        var wg sync.WaitGroup
-
-        // Use an atomic counter to keep track of the number of requests
-        var requestCount int64
-
-        // Accept incoming connections concurrently
-        for i := 0; i < numCPUs; i++ {
-                wg.Add(1)
-                go func() {
-                        defer wg.Done()
-                        for {
-                                conn, err := listener.Accept()
-                                if err != nil {
-                                        fmt.Printf("Failed to accept connection: %v\n", err)
-                                        continue
-                                }
-
-                                // Increment the request counter
-                                atomic.AddInt64(&requestCount, 1)
-
-                                // Handle the request concurrently
-                                go handleRequest(conn)
-                        }
-                }()
-        }
-
-        // Wait for all goroutines to finish
-        wg.Wait()
-}
-
-func handleRequest(conn net.Conn) {
-        defer conn.Close()
-
-        // Read and discard the request data
-        buf := make([]byte, 1024)
-        _, err := conn.Read(buf)
-        if err != nil {
-                fmt.Printf("Failed to read request: %v\n", err)
-                return
-        }
-
-        // Write a simple response
-        _, err = conn.Write([]byte("OK\n"))
-        if err != nil {
-                fmt.Printf("Failed to write response: %v\n", err)
-                return
-        }
+    fmt.Println("Server listening on :8080")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        fmt.Printf("Failed to start server: %v\n", err)
+    }
 }
 EOF
 
