@@ -59,3 +59,5 @@ tcp_service_wave.addStage(deploy_7);
 ```
 
 You can add your own server logic into the serverscripts/ directory and modifiy the serverFileName in the example above to your file name.
+
+You could also add a for loop logic that iterates over an array of objects containing the configuration for the new TcpServiceStage
