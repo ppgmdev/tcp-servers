@@ -9,6 +9,7 @@ To get started do:
 ```
 git clone https://github.com/ppgmdev/tcp-servers.git
 cdk bootstrap
+cdk synth
 cdk deploy --all
 ```
 This will deploy the POC-Network Stack and the PipelineStack in your account.
